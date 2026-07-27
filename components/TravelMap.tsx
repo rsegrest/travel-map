@@ -50,6 +50,21 @@ export function TravelMap({ map }: TravelMapProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const globeRef = useRef<any>(null);
+  const mapCanvasWrapRef = useRef<HTMLDivElement>(null);
+  const [globeDimensions, setGlobeDimensions] = useState({ width: WIDTH, height: HEIGHT });
+
+  // Keep the globe canvas sized to its wrapper, which is responsive via CSS
+  useEffect(() => {
+    const wrapEl = mapCanvasWrapRef.current;
+    if (!wrapEl) return;
+    const updateGlobeDimensions = () => {
+      setGlobeDimensions({ width: wrapEl.clientWidth, height: wrapEl.clientHeight });
+    };
+    updateGlobeDimensions();
+    const resizeObserver = new ResizeObserver(updateGlobeDimensions);
+    resizeObserver.observe(wrapEl);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // Build world features with ISO codes as properties
   const worldFeatures = useMemo(() => {
@@ -349,14 +364,14 @@ export function TravelMap({ map }: TravelMapProps) {
           </div>
         </div>
 
-        <div className="map-canvas-wrap">
+        <div className="map-canvas-wrap" ref={mapCanvasWrapRef}>
           {scope === "world" ? (
             <Globe
               ref={globeRef}
-              width={WIDTH}
-              height={HEIGHT}
-              globeImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg"
-              backgroundImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png"
+              width={globeDimensions.width}
+              height={globeDimensions.height}
+              globeImageUrl="https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg"
+              backgroundImageUrl="https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png"
               polygonsData={worldFeatures.filter((d) => d.properties?.ISO_A2 && d.properties.ISO_A2 !== "AQ")}
               polygonCapColor={polygonCapColor}
               polygonSideColor={polygonSideColor}
@@ -463,7 +478,7 @@ export function TravelMap({ map }: TravelMapProps) {
                       <h3>Related Blog Post</h3>
                       <p>
                         <a
-                          href={`https://ricksegrest.com/blog/${selected.place.blogPostSlug}`}
+                          href={`${process.env.NEXT_PUBLIC_BLOG_BASE_URL ?? ""}/blog/${selected.place.blogPostSlug}`}
                           target="_blank"
                           rel="noreferrer"
                         >
