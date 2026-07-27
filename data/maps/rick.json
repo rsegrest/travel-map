@@ -1,0 +1,84 @@
+{
+  "id": "local-rick",
+  "owner_id": "local-owner",
+  "slug": "rick",
+  "title": "Demo Travel Map",
+  "visibility": "public",
+  "created_at": "2026-05-25T00:00:00.000Z",
+  "updated_at": "2026-05-25T00:00:00.000Z",
+  "data": {
+    "version": 1,
+    "profile": {
+      "displayName": "Demo Traveler",
+      "title": "Demo Travel Map",
+      "homeBase": "Springfield, IL"
+    },
+    "places": {
+      "countries": {
+        "FR": {
+          "name": "France",
+          "status": "visited",
+          "years": [2018, 2023],
+          "cities": [
+            {
+              "name": "Paris",
+              "lat": 48.8566,
+              "lng": 2.3522,
+              "kind": "visited"
+            }
+          ],
+          "post": {
+            "title": "Example blog post",
+            "body": "This is example content showing how a place's post shows up on the map."
+          }
+        },
+        "JP": {
+          "name": "Japan",
+          "status": "want",
+          "years": [],
+          "cities": []
+        },
+        "MX": {
+          "name": "Mexico",
+          "status": "seen",
+          "years": [],
+          "cities": []
+        }
+      },
+      "states": {
+        "US-IL": {
+          "name": "Illinois",
+          "status": "lived",
+          "years": [2000, 2010],
+          "cities": [
+            {
+              "name": "Springfield",
+              "lat": 39.7817,
+              "lng": -89.6501,
+              "kind": "lived"
+            }
+          ]
+        },
+        "US-CA": {
+          "name": "California",
+          "status": "visited",
+          "years": [2019],
+          "cities": [
+            {
+              "name": "San Francisco",
+              "lat": 37.7749,
+              "lng": -122.4194,
+              "kind": "visited"
+            }
+          ]
+        },
+        "US-TX": {
+          "name": "Texas",
+          "status": "want",
+          "years": [],
+          "cities": []
+        }
+      }
+    }
+  }
+}
