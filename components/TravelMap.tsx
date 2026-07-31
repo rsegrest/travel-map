@@ -113,21 +113,22 @@ export function TravelMap({ map }: TravelMapProps) {
     return results.sort((a, b) => a.label.localeCompare(b.label));
   }, [searchQuery, currentCollection, scope]);
 
+  function focusGlobeOnCountry(code: string) {
+    if (scope !== "world" || !globeRef.current) return;
+    const feature = worldFeatures.find((f) => (f.properties?.ISO_A2) === code);
+    if (!feature) return;
+    const centroid = getCentroid(feature);
+    if (centroid) {
+      globeRef.current.pointOfView({ lat: centroid[1], lng: centroid[0], altitude: 1.5 }, 1200);
+    }
+  }
+
   function selectPlaceFromSearch(option: { key: string; label: string }) {
     setSearchQuery("");
     setSearchFocused(false);
     const place = currentCollection[option.key];
     setSelected({ key: option.key, label: option.label, place });
-    // Point the globe at this country
-    if (scope === "world" && globeRef.current) {
-      const feature = worldFeatures.find((f) => (f.properties?.ISO_A2) === option.key);
-      if (feature) {
-        const centroid = getCentroid(feature);
-        if (centroid) {
-          globeRef.current.pointOfView({ lat: centroid[1], lng: centroid[0], altitude: 1.5 }, 800);
-        }
-      }
-    }
+    focusGlobeOnCountry(option.key);
   }
 
   function getCentroid(feature: Feature<Geometry>): [number, number] | null {
@@ -272,7 +273,7 @@ export function TravelMap({ map }: TravelMapProps) {
       <div className="map-panel">
         <div className="map-toolbar" aria-label="Map controls">
           {/* Search */}
-          <div className="search-wrap" style={{ position: "relative", flex: 1, maxWidth: 280 }}>
+          <div className="search-wrap" style={{ position: "relative" }}>
             <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--muted)", pointerEvents: "none" }} />
             <input
               type="text"
@@ -405,7 +406,10 @@ export function TravelMap({ map }: TravelMapProps) {
                 <button
                   className={`flag-pill${isActive ? " active" : ""}`}
                   key={code}
-                  onClick={() => setSelected({ key: code, label, place })}
+                  onClick={() => {
+                    setSelected({ key: code, label, place });
+                    focusGlobeOnCountry(code);
+                  }}
                   type="button"
                 >
                   {scope === "world" ? <span aria-hidden>{flagEmoji(code)}</span> : null}

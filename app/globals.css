@@ -145,6 +145,11 @@ a {
   padding: 12px 14px;
 }
 
+.search-wrap {
+  flex: 1;
+  max-width: 280px;
+}
+
 .segmented-control,
 .editor-tabs {
   align-items: center;
@@ -1004,6 +1009,10 @@ label {
   .editor-auth {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .search-wrap {
+    max-width: none;
   }
 
   .top-bar h1 {
