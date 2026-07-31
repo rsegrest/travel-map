@@ -809,6 +809,17 @@ function PlaceForm({
           placeholder="Impressions"
           value={place.post?.body || ""}
         />
+        <input
+          aria-label="Blog post slug"
+          onChange={(event) =>
+            onChange({
+              ...place,
+              blogPostSlug: event.target.value || undefined
+            })
+          }
+          placeholder="Blog post slug (e.g. travel-map-d3-geo)"
+          value={place.blogPostSlug || ""}
+        />
       </div>
     </div>
   );
