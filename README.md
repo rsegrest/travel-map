@@ -1,15 +1,30 @@
 # Travel Map
 
-A personal travel map app with public display pages and protected editing. It supports world countries and territories, U.S. states, visit statuses, country flags, city markers, years, and optional posts per place.
+An interactive, self-hostable travel map for tracking everywhere you've been — **world countries, territories, and U.S. states** on a globe and a 2D US map, with visit statuses, city markers, years, and optional write-ups per place.
+
+Built to be yours: it ships with demo data, runs locally in seconds, and reads real data from **Supabase** at runtime (or a local JSON file) once you add your own places.
+
+## Live demo
+
+See it in action: [**travel-map-ivory.vercel.app**](https://travel-map-ivory.vercel.app)
+
+## Features
+
+- **🌍 3D globe + 🇺🇸 2D US map** — toggle between world and US views
+- **Rich place data** — countries, territories, and states with visit statuses (visited, lived, seen, planned, want), city markers, years, and flags
+- **Per-place write-ups** — attach a short post / story to any location
+- **Search & fly-to** — type-ahead search that zooms straight to a country or state
+- **Protected editing** — a password-protected editor for managing your map; edits persist to Supabase with row-level security, or to a local JSON file
+- **Dark, glassy theme** — aurora-inspired, matches a developer-portfolio aesthetic
 
 ## Stack
 
-- Next.js App Router and TypeScript
-- SVG vector maps with `d3-geo`, `topojson-client`, `world-atlas`, and `us-atlas`
-- Supabase-ready auth and Postgres JSONB storage
-- Local readable JSON fallback in `data/maps`
+- **Next.js** (App Router) + TypeScript
+- **d3-geo / topojson-client** with `world-atlas` and `us-atlas` for vector maps
+- **react-globe.gl** for the 3D world view
+- **Supabase** (Postgres + JSONB + row-level security) for data; local JSON fallback
 
-## Run Locally
+## Run locally
 
 ```bash
 npm install
@@ -18,30 +33,54 @@ npm run dev
 
 Open `http://localhost:3000/m/rick`.
 
-For the local JSON fallback, open `http://localhost:3000/m/rick/edit` and use `demo-owner-key` unless `MAP_OWNER_KEY` is set in `.env.local`.
-After a successful save, the local owner key is remembered in the browser's `localStorage` for that map slug. Use the editor's `Forget key` button to remove it from the browser.
+Out of the box this serves **demo data** so you can see it working immediately. To edit it locally, open `/m/rick/edit` and use the owner key (default `demo-owner-key`, or set `MAP_OWNER_KEY` in `.env.local`).
 
-## City Lookup
+## Make it yours
 
-The editor has a built-in local city list for demo data. To look up additional city coordinates dynamically, add a Geoapify key to `.env.local`:
+You can start a brand-new map in two ways — your call:
+
+**Option A — local JSON (simplest).** Edit `data/maps/<slug>.json` directly, or use the in-app editor. No database required.
+
+**Option B — Supabase (multi-device, edits from anywhere).**
+
+1. Create a free Supabase project.
+2. Run `supabase/schema.sql` in the SQL editor.
+3. Add env vars (Vercel or `.env.local`):
+
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=...
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+   ```
+
+4. Insert a row into `public.maps` — `owner_id` is your Supabase auth user id, `data` follows the shape in `data/maps/rick.json`.
+
+When Supabase is configured, public reads come from Supabase and edits require Supabase Auth (row-level security guards writes). Otherwise the app falls back to local JSON.
+
+## City lookup
+
+The editor ships with a built-in city list for demo data. For dynamic coordinate lookup, add a [Geoapify](https://www.geoapify.com/) key:
 
 ```bash
 GEOAPIFY_API_KEY=...
 ```
 
-The key is used only from the server route at `/api/geocode/cities`, so it is not exposed to the browser.
+It's used only by the server route at `/api/geocode/cities` — never exposed to the browser.
 
-## Supabase Setup
+## Project layout
 
-1. Create a Supabase project.
-2. Run `supabase/schema.sql` in the SQL editor.
-3. Add these environment variables to Vercel and `.env.local`:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
+app/            Next.js routes (display, edit, admin)
+components/     TravelMap, UsMap, MapEditor
+lib/            data access (map-store), geo, schema, years
+data/maps/      local JSON fallback (demo data)
+supabase/       SQL schema for the maps table
+public/         US state flag assets
 ```
 
-4. Insert a row in `public.maps` where `owner_id` is your Supabase auth user id and `data` follows the JSON shape in `data/maps/rick.json`.
+## License
 
-When Supabase variables are present, public reads come from Supabase and edits use Supabase Auth plus row-level security.
+MIT — use it, fork it, make it your own.
+
+---
+
+*Demo data is a stand-in: replace it with your own places and your own stories. That's the point.*
